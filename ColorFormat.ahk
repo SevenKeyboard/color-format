@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v1.1.17+
+﻿#Requires AutoHotkey v1.1.35+
 ;==============================================================
 ; ColorFormat — Color space conversion helpers for AutoHotkey
 ;
@@ -79,13 +79,13 @@ class ColorFormat
                     ,prior_tested_CIEL:=curr_testing_CIEL))
                 switch
                 {
-                    case (lowest_valid_CIEL!="" && lowest_valid_CIEL<=target_CIEL):
+                    case (lowest_valid_CIEL!=="" && lowest_valid_CIEL<=target_CIEL):
                         this.CIELabtoRGB(target_CIEL,CIEa,CIEb,R,G,B)
                         this.roundRGB(R,G,B)
                         this.joinRGB(R,G,B,RGB)
                         return RGB
                     default:
-                        if (lowest_valid_CIEL!="")
+                        if (lowest_valid_CIEL!=="")
                             this.CIELabtoRGB(lowest_valid_CIEL,CIEa,CIEb,curr_R1,curr_G1,curr_B1)
                         else
                             curr_R1:=R, curr_G1:=G, curr_B1:=B
@@ -126,7 +126,7 @@ class ColorFormat
                 switch
                 {
                     default:
-                        if (highest_valid_CIEL!="")
+                        if (highest_valid_CIEL!=="")
                             this.CIELabtoRGB(highest_valid_CIEL,CIEa,CIEb,curr_R1,curr_G1,curr_B1)
                         else
                             curr_R1:=R, curr_G1:=G, curr_B1:=B
@@ -149,7 +149,7 @@ class ColorFormat
                         this.roundRGB(curr_R2,curr_G2,curr_B2)
                         this.joinRGB(curr_R2,curr_G2,curr_B2,RGB)
                         return RGB
-                    case (highest_valid_CIEL!="" && target_CIEL<=highest_valid_CIEL):
+                    case (highest_valid_CIEL!=="" && target_CIEL<=highest_valid_CIEL):
                         this.CIELabtoRGB(target_CIEL,CIEa,CIEb,R,G,B)
                         this.roundRGB(R,G,B)
                         this.joinRGB(R,G,B,RGB)
