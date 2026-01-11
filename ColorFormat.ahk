@@ -158,7 +158,9 @@ class ColorFormat
         this.RGBtoCIELab(R,G,B,CIEL,CIEa,CIEb)
         switch
         {
-            default:                                        return RGB
+            default:
+                return RGB
+                
             case (target_CIEL<CIEL):
                 lowest_valid_CIEL:=""
                 max_CIEL:=CIEL
