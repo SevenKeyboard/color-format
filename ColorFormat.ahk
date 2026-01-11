@@ -14,6 +14,102 @@
 ;   Re: Script pressing Left or Right if PixelGetColor approximately correct
 ;     https://www.autohotkey.com/boards/viewtopic.php?&f=76&t=9406#p55355
 ;==============================================================
+
+/*
+setBatchLines -1
+
+worstAbsError := -1
+worstInputRGB := 0
+worstTargetL  := 0
+worstOutputRGB:= 0
+worstResultL  := 0
+
+caseIndex := 0
+
+r := 0
+while (r <= 255) {
+    g := 0
+    while (g <= 255) {
+        b := 0
+        while (b <= 255) {
+            ColorFormat.joinRGB(r, g, b, inputRGB)
+
+            prevResultL := -1
+            targetL := 0
+            while (targetL <= 100) {
+
+                outputRGB := ColorFormat.adjustBrightnessRGB(inputRGB, targetL)
+                ColorFormat.splitRGB(outputRGB, outR, outG, outB)
+                ColorFormat.RGBtoCIELab(outR, outG, outB, resultL)
+
+                absError := abs(resultL - targetL)
+                if (absError > worstAbsError) {
+                    worstAbsError  := absError
+                    worstInputRGB  := inputRGB
+                    worstTargetL   := targetL
+                    worstOutputRGB := outputRGB
+                    worstResultL   := resultL
+                }
+
+                if (resultL < prevResultL) {
+                    msgBox 16, % "Error"
+                        , % "Input RGB=" format("{:06X}", inputRGB) "`n"
+                        . "Target L*=" targetL "`n"
+                        . "Prev L*=" prevResultL "`n"
+                        . "Result L*=" resultL "`n"
+                        . "Output RGB=" format("{:06X}", outputRGB) "`n"
+                        . "`nWorst |L-target|=" round(worstAbsError, 3) "`n"
+                        . "Worst @Input=" format("{:06X}", worstInputRGB) "`n"
+                        . "Worst target=" worstTargetL "  result=" round(worstResultL, 3) "`n"
+                        . "Worst output=" format("{:06X}", worstOutputRGB)
+                    ExitApp
+                }
+                prevResultL := resultL
+
+                if (!mod(caseIndex, 11)) {
+                    tooltip, % "Input " format("{:06X}", inputRGB)
+                        . "  target=" format("{:07}", round(targetL, 3))
+                        . "  L="      Format("{:07}", round(resultL, 3))
+                        . "  |e|="    Format("{:07}", round(absError, 3))
+                        . "  out "    Format("{:06X}", outputRGB) "`n"
+                        . "Worst |e|=" Format("{:07}", round(worstAbsError, 3))
+                        . " @ " format("{:06X}", worstInputRGB)
+                        . " target=" round(worstTargetL, 3)
+                        . " out " format("{:06X}", worstOutputRGB) "`n"
+                        . "case=" caseIndex "  elapsed=" round((A_TickCount)/1000, 1) "s"
+                }
+
+                targetL += nextStep("targetL")
+                caseIndex++
+            }
+            b += nextStep("b")
+        }
+        g += nextStep("g")
+    }
+    r += nextStep("r")
+}
+
+tooltip
+msgBox 64, % "Done"
+    , % "OK`n"
+    . "Worst |L-target|=" round(worstAbsError, 3) "`n"
+    . "at Input=" format("{:06X}", worstInputRGB) "`n"
+    . "target=" round(worstTargetL, 3) "  result=" round(worstResultL, 3) "`n"
+    . "output=" format("{:06X}", worstOutputRGB)
+
+nextStep(kind) {
+    switch (kind)
+    {
+        case "r", "g", "b":
+            random jitter, 0, 3
+            return 16 + jitter
+        case "targetL":
+            random jitter, 0.0, 1.0
+            return 3 + jitter
+    }
+}
+*/
+
 class VersionManager_ColorFormat
 {
     static _ := VersionManager_ColorFormat._init()
@@ -134,18 +230,18 @@ class ColorFormat
                         max_S:=curr_S1
                         min_S:=0
                         loop    {
-                            curr_testing_S:=min_V+(max_V-min_V)/2
+                            curr_testing_S:=min_S+(max_S-min_S)/2
                             this.HSVtoRGB(curr_H1,curr_testing_S,1,curr_R2,curr_G2,curr_B2)
                             this.RGBtoCIELab(curr_R2,curr_G2,curr_B2,curr_CIEL2)
                             if (curr_CIEL2==target_CIEL)
                                 break
                             else if (curr_CIEL2<target_CIEL)
-                                max_V:=curr_testing_S
+                                max_S:=curr_testing_S
                             else if (target_CIEL<curr_CIEL2)
-                                min_V:=curr_testing_S
+                                min_S:=curr_testing_S
                         }  until  (format("{1}"
-                            ,prev_testing_V==curr_testing_V
-                            ,prev_testing_V:=curr_testing_V))
+                            ,prev_testing_S==curr_testing_S
+                            ,prev_testing_S:=curr_testing_S))
                         this.roundRGB(curr_R2,curr_G2,curr_B2)
                         this.joinRGB(curr_R2,curr_G2,curr_B2,RGB)
                         return RGB
