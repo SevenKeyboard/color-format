@@ -120,34 +120,34 @@ class VersionManager_ColorFormat
 }
 class ColorFormat
 {
-    splitARGB(ARGB, ByRef A:="", ByRef R:="", ByRef G:="", ByRef B:="")    {
+    splitARGB(ARGB, byRef A:="", byRef R:="", byRef G:="", byRef B:="")    {
          A:=(ARGB&0xFF000000)>>>24
         ,R:=(ARGB&0xFF0000)>>>16
         ,G:=(ARGB&0xFF00)>>>8
         ,B:=(ARGB&0xFF)
     }
-    joinARGB(A, R, G, B, ByRef ARGB:="")    {
+    joinARGB(A, R, G, B, byRef ARGB:="")    {
         ARGB:=((A&0xFF)<<24)|((R&0xFF)<<16)|((G&0xFF)<<8)|(B&0xFF)
     }
-    splitRGB(RGB, ByRef R:="", ByRef G:="", ByRef B:="")    {
+    splitRGB(RGB, byRef R:="", byRef G:="", byRef B:="")    {
          R:=(RGB&0xFF0000)>>>16
         ,G:=(RGB&0xFF00)>>>8
         ,B:=(RGB&0xFF)
     }
-    joinRGB(R, G, B, ByRef RGB:="")    {
+    joinRGB(R, G, B, byRef RGB:="")    {
         RGB:=((R&0xFF)<<16)|((G&0xFF)<<8)|(B&0xFF)
     }
     ;------------------------------------
-    ceilRGB(ByRef R:="", ByRef G:="", ByRef B:="")    {
+    ceilRGB(byRef R:="", byRef G:="", byRef B:="")    {
         this._roundingRGB("ceil",R,G,B)
     }
-    floorRGB(ByRef R:="", ByRef G:="", ByRef B:="")    {
+    floorRGB(byRef R:="", byRef G:="", byRef B:="")    {
         this._roundingRGB("floor",R,G,B)
     }
-    roundRGB(ByRef R:="", ByRef G:="", ByRef B:="")    {
+    roundRGB(byRef R:="", byRef G:="", byRef B:="")    {
         this._roundingRGB("round",R,G,B)
     }
-    _roundingRGB(funcName, ByRef R, ByRef G, ByRef B)    {
+    _roundingRGB(funcName, byRef R, byRef G, byRef B)    {
          R:=(%funcName%(R)&0xFF)
         ,G:=(%funcName%(G)&0xFF)
         ,B:=(%funcName%(B)&0xFF)
@@ -258,16 +258,16 @@ class ColorFormat
         }
     }
     ;------------------------------------
-    RGBtoCIELab(R, G, B, ByRef CIEL:="", ByRef CIEa:="", ByRef CIEb:="")    {
+    RGBtoCIELab(R, G, B, byRef CIEL:="", byRef CIEa:="", byRef CIEb:="")    {
          this.RGBtoXYZ(R,G,B,X,Y,Z)
         ,this.XYZtoCIELab(X,Y,Z,CIEL,CIEa,CIEb)
     }
-    CIELabtoRGB(CIEL, CIEa, CIEb, ByRef R:="", ByRef G:="", ByRef B:="")    {
+    CIELabtoRGB(CIEL, CIEa, CIEb, byRef R:="", byRef G:="", byRef B:="")    {
          this.CIELabtoXYZ(CIEL,CIEa,CIEb,X,Y,Z)
         ,this.XYZtoRGB(X,Y,Z,R,G,B)
     }
     ;------------------------------------
-    XYZtoRGB(X, Y, Z, ByRef R:="", ByRef G:="", ByRef B:="")    {
+    XYZtoRGB(X, Y, Z, byRef R:="", byRef G:="", byRef B:="")    {
         for _,v in ["X","Y","Z"]
             var_%v%:=%v%/100
          var_R:=var_X*3.240969941904523+var_Y*-1.537383177570094+var_Z*-0.498610760293003
@@ -280,7 +280,7 @@ class ColorFormat
             ,%v%:=min(255,max(0,var_%v%*255))
         }
     }
-    RGBtoXYZ(R, G, B, ByRef X:="", ByRef Y:="", ByRef Z:="")    {
+    RGBtoXYZ(R, G, B, byRef X:="", byRef Y:="", byRef Z:="")    {
         for _,v in ["R","G","B"]    {
              var_%v%:=(%v%/255)
             ,var_%v%:=(var_%v%>0.04045)
@@ -296,7 +296,7 @@ class ColorFormat
     }
     ;   Which matrix is correct to map XYZ to linear RGB for sRGB?
     ;     https://stackoverflow.com/questions/66360637/which-matrix-is-correct-to-map-xyz-to-linear-rgb-for-srgb
-    XYZtoCIELab(X, Y, Z, ByRef CIEL:="", ByRef CIEa:="", ByRef CIEb:="")    {
+    XYZtoCIELab(X, Y, Z, byRef CIEL:="", byRef CIEa:="", byRef CIEb:="")    {
         for _,v in ["X","Y","Z"]    {
              var_%v%:=%v%/this.CIE.XYZ[v]
             ,var_%v%:=(var_%v%>0.008856)
@@ -307,7 +307,7 @@ class ColorFormat
         ,CIEa:=500*(var_X-var_Y)
         ,CIEb:=200*(var_Y-var_Z)
     }
-    CIELabtoXYZ(CIEL, CIEa, CIEb, ByRef X:="", ByRef Y:="", ByRef Z:="")    {
+    CIELabtoXYZ(CIEL, CIEa, CIEb, byRef X:="", byRef Y:="", byRef Z:="")    {
          var_Y:=(CIEL+16)/116
         ,var_X:=CIEa/500+var_Y
         ,var_Z:=var_Y-CIEb/200
@@ -318,7 +318,7 @@ class ColorFormat
             %v%:=this.CIE.XYZ[v]*var_%v%
         }
     }
-    RGBtoHSL(R, G, B, ByRef H:="", ByRef S:="", ByRef L:="")    {
+    RGBtoHSL(R, G, B, byRef H:="", byRef S:="", byRef L:="")    {
         for _,v in ["R","G","B"]
             var_%v%:=%v%/255
          var_Min:=min(var_R,var_G,var_B)
@@ -342,7 +342,7 @@ class ColorFormat
             H+=(H<0?1:1<H?-1:0)
         }
     }
-    HSLtoRGB(H, S, L, ByRef R:="", ByRef G:="", ByRef B:="")    {
+    HSLtoRGB(H, S, L, byRef R:="", byRef G:="", byRef B:="")    {
         if (S==0)    {
             for _,v in ["R","G","B"]
                 %v%:=L*255
@@ -366,7 +366,7 @@ class ColorFormat
         }
         return v1
     }
-    RGBtoHSV(R, G, B, ByRef H:="", ByRef S:="", ByRef V:="")    {
+    RGBtoHSV(R, G, B, byRef H:="", byRef S:="", byRef V:="")    {
         for _,w in ["R","G","B"]
             var_%w%:=%w%/255
          var_Min:=min(var_R,var_G,var_B)
@@ -388,7 +388,7 @@ class ColorFormat
             H+=(H<0?1:1<H?-1:0)
         }
     }
-    HSVtoRGB(H, S, V, ByRef R:="", ByRef G:="", ByRef B:="")    {
+    HSVtoRGB(H, S, V, byRef R:="", byRef G:="", byRef B:="")    {
         if (S==0)    {
             for _,w in ["R","G","B"]
                 %w%:=V*255
