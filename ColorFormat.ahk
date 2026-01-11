@@ -412,7 +412,7 @@ class ColorFormat
     ;------------------------------------
     Class CIE
     {
-        static f83ded51_5a52_4abc_8397_978137355858:=ColorFormat.CIE._init()
+        static _:=ColorFormat.CIE._init()
         _init()    {
             this.ColorSpace:="CIE 1964"
             this.Illuminant:="D65"
@@ -435,7 +435,7 @@ class ColorFormat
         }
         Class Yxy
         {
-            static b10dddd7_6b42_4efa_a1a4_5378fd9bf443:=ColorFormat.CIE.Yxy._init()
+            static _:=ColorFormat.CIE.Yxy._init()
             _init()    {
                 this._data:=object()
                 this._data["CIE 1931"]:=object()
@@ -466,7 +466,7 @@ class ColorFormat
         ;     https://en.wikipedia.org/wiki/Standard_illuminant#White_points_of_standard_illuminants
         Class XYZ
         {
-            static efb1ea4b_8590_4976_831d_7ccd01e08b9d:=ColorFormat.CIE.XYZ._init()
+            static _:=ColorFormat.CIE.XYZ._init()
             _init()    {
                 this.Y:=100
             }            
