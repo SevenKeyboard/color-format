@@ -175,9 +175,8 @@ class ColorFormat
                             min_CIEL:=curr_testing_CIEL
                         else ;  succeed
                             max_CIEL:= lowest_valid_CIEL:= curr_testing_CIEL
-                    }  until  (format("{1}"
-                        ,prior_tested_CIEL==curr_testing_CIEL
-                        ,prior_tested_CIEL:=curr_testing_CIEL))
+                    }  until  (prior_tested_CIEL==curr_testing_CIEL
+                        ,prior_tested_CIEL:=curr_testing_CIEL)
                     switch
                     {
                         case (lowest_valid_CIEL!=="" && lowest_valid_CIEL<=target_CIEL):
@@ -203,9 +202,8 @@ class ColorFormat
                                     min_V:=curr_testing_V
                                 else if (target_CIEL<curr_CIEL2)
                                     max_V:=curr_testing_V
-                            }  until  (format("{1}"
-                                ,prev_testing_V==curr_testing_V
-                                ,prev_testing_V:=curr_testing_V))
+                            }  until  (prev_testing_V==curr_testing_V
+                                ,prev_testing_V:=curr_testing_V)
                             this.roundRGB(curr_R2,curr_G2,curr_B2)
                             this.joinRGB(curr_R2,curr_G2,curr_B2,RGB)
                             return RGB
@@ -221,9 +219,8 @@ class ColorFormat
                             max_CIEL:=curr_testing_CIEL
                         else ;  succeed
                             min_CIEL:= highest_valid_CIEL:= curr_testing_CIEL
-                    }  until  (format("{1}"
-                        ,prior_tested_CIEL==curr_testing_CIEL
-                        ,prior_tested_CIEL:=curr_testing_CIEL))
+                    }  until  (prior_tested_CIEL==curr_testing_CIEL
+                        ,prior_tested_CIEL:=curr_testing_CIEL)
                     switch
                     {
                         default:
@@ -244,9 +241,8 @@ class ColorFormat
                                     max_S:=curr_testing_S
                                 else if (target_CIEL<curr_CIEL2)
                                     min_S:=curr_testing_S
-                            }  until  (format("{1}"
-                                ,prev_testing_S==curr_testing_S
-                                ,prev_testing_S:=curr_testing_S))
+                            }  until  (prev_testing_S==curr_testing_S
+                                ,prev_testing_S:=curr_testing_S)
                             this.roundRGB(curr_R2,curr_G2,curr_B2)
                             this.joinRGB(curr_R2,curr_G2,curr_B2,RGB)
                             return RGB
