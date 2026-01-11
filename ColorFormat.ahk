@@ -154,105 +154,111 @@ class ColorFormat
     }
     ;------------------------------------
     adjustBrightnessRGB(RGB, target_CIEL)    {
-        this.splitRGB(RGB,R,G,B)
-        this.RGBtoCIELab(R,G,B,CIEL,CIEa,CIEb)
-        switch
-        {
-            default:
-                return RGB
-                
-            case (target_CIEL<CIEL):
-                lowest_valid_CIEL:=""
-                max_CIEL:=CIEL
-                min_CIEL:=0
-                loop    {
-                    curr_testing_CIEL:=min_CIEL+(max_CIEL-min_CIEL)/2
-                    this.CIELabtoRGB(curr_testing_CIEL,CIEa,CIEb,curr_R1,curr_G1,curr_B1)
-                    if (R<curr_R1 || G<curr_G1 || B<curr_B1) ;  failed
-                        min_CIEL:=curr_testing_CIEL
-                    else ;  succeed
-                        max_CIEL:= lowest_valid_CIEL:= curr_testing_CIEL
-                }  until  (format("{1}"
-                    ,prior_tested_CIEL==curr_testing_CIEL
-                    ,prior_tested_CIEL:=curr_testing_CIEL))
-                switch
-                {
-                    case (lowest_valid_CIEL!=="" && lowest_valid_CIEL<=target_CIEL):
-                        this.CIELabtoRGB(target_CIEL,CIEa,CIEb,R,G,B)
-                        this.roundRGB(R,G,B)
-                        this.joinRGB(R,G,B,RGB)
-                        return RGB
-                    default:
-                        if (lowest_valid_CIEL!=="")
-                            this.CIELabtoRGB(lowest_valid_CIEL,CIEa,CIEb,curr_R1,curr_G1,curr_B1)
-                        else
-                            curr_R1:=R, curr_G1:=G, curr_B1:=B
-                        this.RGBtoHSV(curr_R1,curr_G1,curr_B1,curr_H1,,curr_V1)
-                        max_V:=curr_V1
-                        min_V:=0
-                        loop    {
-                            curr_testing_V:=min_V+(max_V-min_V)/2
-                            this.HSVtoRGB(curr_H1,1,curr_testing_V,curr_R2,curr_G2,curr_B2)
-                            this.RGBtoCIELab(curr_R2,curr_G2,curr_B2,curr_CIEL2)
-                            if (curr_CIEL2==target_CIEL)
-                                break
-                            else if (curr_CIEL2<target_CIEL)
-                                min_V:=curr_testing_V
-                            else if (target_CIEL<curr_CIEL2)
-                                max_V:=curr_testing_V
-                        }  until  (format("{1}"
-                            ,prev_testing_V==curr_testing_V
-                            ,prev_testing_V:=curr_testing_V))
-                        this.roundRGB(curr_R2,curr_G2,curr_B2)
-                        this.joinRGB(curr_R2,curr_G2,curr_B2,RGB)
-                        return RGB
-                }
-            case (CIEL<target_CIEL):
-                highest_valid_CIEL:=""
-                max_CIEL:=100
-                min_CIEL:=CIEL
-                loop    {
-                    curr_testing_CIEL:=min_CIEL+(max_CIEL-min_CIEL)/2
-                    this.CIELabtoRGB(curr_testing_CIEL,CIEa,CIEb,curr_R1,curr_G1,curr_B1)
-                    if (curr_R1<R || curr_G1<G || curr_B1<B) ;  failed
-                        max_CIEL:=curr_testing_CIEL
-                    else ;  succeed
-                        min_CIEL:= highest_valid_CIEL:= curr_testing_CIEL
-                }  until  (format("{1}"
-                    ,prior_tested_CIEL==curr_testing_CIEL
-                    ,prior_tested_CIEL:=curr_testing_CIEL))
-                switch
-                {
-                    default:
-                        if (highest_valid_CIEL!=="")
-                            this.CIELabtoRGB(highest_valid_CIEL,CIEa,CIEb,curr_R1,curr_G1,curr_B1)
-                        else
-                            curr_R1:=R, curr_G1:=G, curr_B1:=B
-                        this.RGBtoHSV(curr_R1,curr_G1,curr_B1,curr_H1,curr_S1)
-                        max_S:=curr_S1
-                        min_S:=0
-                        loop    {
-                            curr_testing_S:=min_S+(max_S-min_S)/2
-                            this.HSVtoRGB(curr_H1,curr_testing_S,1,curr_R2,curr_G2,curr_B2)
-                            this.RGBtoCIELab(curr_R2,curr_G2,curr_B2,curr_CIEL2)
-                            if (curr_CIEL2==target_CIEL)
-                                break
-                            else if (curr_CIEL2<target_CIEL)
-                                max_S:=curr_testing_S
-                            else if (target_CIEL<curr_CIEL2)
-                                min_S:=curr_testing_S
-                        }  until  (format("{1}"
-                            ,prev_testing_S==curr_testing_S
-                            ,prev_testing_S:=curr_testing_S))
-                        this.roundRGB(curr_R2,curr_G2,curr_B2)
-                        this.joinRGB(curr_R2,curr_G2,curr_B2,RGB)
-                        return RGB
-                    case (highest_valid_CIEL!=="" && target_CIEL<=highest_valid_CIEL):
-                        this.CIELabtoRGB(target_CIEL,CIEa,CIEb,R,G,B)
-                        this.roundRGB(R,G,B)
-                        this.joinRGB(R,G,B,RGB)
-                        return RGB
-                }
+        prevBL := A_BatchLines
+        setBatchLines -1
+        try  {
+            this.splitRGB(RGB,R,G,B)
+            this.RGBtoCIELab(R,G,B,CIEL,CIEa,CIEb)
+            switch
+            {
+                default:
+                    return RGB
+
+                case (target_CIEL<CIEL):
+                    lowest_valid_CIEL:=""
+                    max_CIEL:=CIEL
+                    min_CIEL:=0
+                    loop    {
+                        curr_testing_CIEL:=min_CIEL+(max_CIEL-min_CIEL)/2
+                        this.CIELabtoRGB(curr_testing_CIEL,CIEa,CIEb,curr_R1,curr_G1,curr_B1)
+                        if (R<curr_R1 || G<curr_G1 || B<curr_B1) ;  failed
+                            min_CIEL:=curr_testing_CIEL
+                        else ;  succeed
+                            max_CIEL:= lowest_valid_CIEL:= curr_testing_CIEL
+                    }  until  (format("{1}"
+                        ,prior_tested_CIEL==curr_testing_CIEL
+                        ,prior_tested_CIEL:=curr_testing_CIEL))
+                    switch
+                    {
+                        case (lowest_valid_CIEL!=="" && lowest_valid_CIEL<=target_CIEL):
+                            this.CIELabtoRGB(target_CIEL,CIEa,CIEb,R,G,B)
+                            this.roundRGB(R,G,B)
+                            this.joinRGB(R,G,B,RGB)
+                            return RGB
+                        default:
+                            if (lowest_valid_CIEL!=="")
+                                this.CIELabtoRGB(lowest_valid_CIEL,CIEa,CIEb,curr_R1,curr_G1,curr_B1)
+                            else
+                                curr_R1:=R, curr_G1:=G, curr_B1:=B
+                            this.RGBtoHSV(curr_R1,curr_G1,curr_B1,curr_H1,,curr_V1)
+                            max_V:=curr_V1
+                            min_V:=0
+                            loop    {
+                                curr_testing_V:=min_V+(max_V-min_V)/2
+                                this.HSVtoRGB(curr_H1,1,curr_testing_V,curr_R2,curr_G2,curr_B2)
+                                this.RGBtoCIELab(curr_R2,curr_G2,curr_B2,curr_CIEL2)
+                                if (curr_CIEL2==target_CIEL)
+                                    break
+                                else if (curr_CIEL2<target_CIEL)
+                                    min_V:=curr_testing_V
+                                else if (target_CIEL<curr_CIEL2)
+                                    max_V:=curr_testing_V
+                            }  until  (format("{1}"
+                                ,prev_testing_V==curr_testing_V
+                                ,prev_testing_V:=curr_testing_V))
+                            this.roundRGB(curr_R2,curr_G2,curr_B2)
+                            this.joinRGB(curr_R2,curr_G2,curr_B2,RGB)
+                            return RGB
+                    }
+                case (CIEL<target_CIEL):
+                    highest_valid_CIEL:=""
+                    max_CIEL:=100
+                    min_CIEL:=CIEL
+                    loop    {
+                        curr_testing_CIEL:=min_CIEL+(max_CIEL-min_CIEL)/2
+                        this.CIELabtoRGB(curr_testing_CIEL,CIEa,CIEb,curr_R1,curr_G1,curr_B1)
+                        if (curr_R1<R || curr_G1<G || curr_B1<B) ;  failed
+                            max_CIEL:=curr_testing_CIEL
+                        else ;  succeed
+                            min_CIEL:= highest_valid_CIEL:= curr_testing_CIEL
+                    }  until  (format("{1}"
+                        ,prior_tested_CIEL==curr_testing_CIEL
+                        ,prior_tested_CIEL:=curr_testing_CIEL))
+                    switch
+                    {
+                        default:
+                            if (highest_valid_CIEL!=="")
+                                this.CIELabtoRGB(highest_valid_CIEL,CIEa,CIEb,curr_R1,curr_G1,curr_B1)
+                            else
+                                curr_R1:=R, curr_G1:=G, curr_B1:=B
+                            this.RGBtoHSV(curr_R1,curr_G1,curr_B1,curr_H1,curr_S1)
+                            max_S:=curr_S1
+                            min_S:=0
+                            loop    {
+                                curr_testing_S:=min_S+(max_S-min_S)/2
+                                this.HSVtoRGB(curr_H1,curr_testing_S,1,curr_R2,curr_G2,curr_B2)
+                                this.RGBtoCIELab(curr_R2,curr_G2,curr_B2,curr_CIEL2)
+                                if (curr_CIEL2==target_CIEL)
+                                    break
+                                else if (curr_CIEL2<target_CIEL)
+                                    max_S:=curr_testing_S
+                                else if (target_CIEL<curr_CIEL2)
+                                    min_S:=curr_testing_S
+                            }  until  (format("{1}"
+                                ,prev_testing_S==curr_testing_S
+                                ,prev_testing_S:=curr_testing_S))
+                            this.roundRGB(curr_R2,curr_G2,curr_B2)
+                            this.joinRGB(curr_R2,curr_G2,curr_B2,RGB)
+                            return RGB
+                        case (highest_valid_CIEL!=="" && target_CIEL<=highest_valid_CIEL):
+                            this.CIELabtoRGB(target_CIEL,CIEa,CIEb,R,G,B)
+                            this.roundRGB(R,G,B)
+                            this.joinRGB(R,G,B,RGB)
+                            return RGB
+                    }
+            }
+        }  finally  {
+            setBatchLines % prevBL
         }
     }
     ;------------------------------------
